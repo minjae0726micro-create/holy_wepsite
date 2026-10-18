@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>비밀 스케줄러</title>
+    <script>
+        // 🚨 [핵심 치트키] 도메인 사이트의 강제 액자 틀(iframe)에 갇혀있다면, 진짜 내 주소창으로 강제 탈출시킵니다!
+        if (window.self !== window.top) {
+            window.top.location.href = window.location.href;
+        }
+    </script>
     <style>
         body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         #auth-container { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; box-sizing: border-box; }
@@ -24,12 +30,14 @@
     </style>
 </head>
 <body>
+
     <div id="auth-container">
         <h2>🔒 비밀 기기 인증</h2>
         <p>인증 코드를 입력하세요.</p>
         <input type="password" id="device-code" placeholder="비밀번호 입력">
         <button onclick="checkDevice()">인증하기</button>
     </div>
+
     <div id="main-container">
         <div class="calendar-header">
             <div>
@@ -44,12 +52,15 @@
         </div>
         <div class="calendar-grid" id="calendar-body"></div>
     </div>
+
     <script>
         let currentDate = new Date();
         let savedEvents = JSON.parse(localStorage.getItem('my_local_schedules')) || {};
+
         if (!localStorage.getItem('my_saved_password')) {
             localStorage.setItem('my_saved_password', '1234');
         }
+
         window.checkDevice = function() {
             const inputCode = document.getElementById('device-code').value;
             const currentPassword = localStorage.getItem('my_saved_password');
@@ -60,6 +71,7 @@
                 alert("올바른 기기 인증 코드가 아닙니다!");
             }
         }
+
         window.changeMyPassword = function() {
             const currentPassword = localStorage.getItem('my_saved_password');
             const checkOld = prompt("현재 비밀번호를 입력하세요:");
@@ -73,26 +85,35 @@
                 alert("비밀번호가 일치하지 않습니다!");
             }
         }
+
         window.logoutDevice = function() {
             if (confirm("화면을 잠그시겠습니까?")) {
                 localStorage.removeItem('my_device_locked_auth');
                 location.reload(); 
             }
         }
+
         if (localStorage.getItem('my_device_locked_auth') === 'true') {
             showCalendarPage();
+        } else {
+            document.getElementById('auth-container').style.display = 'block';
+            document.getElementById('main-container').style.display = 'none';
         }
+
         function showCalendarPage() {
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('main-container').style.display = 'block';
             renderCalendar();
         }
+
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             document.getElementById('month-title').innerText = `📅 ${year}년 ${month + 1}월`;
+
             const calendarBody = document.getElementById('calendar-body');
             calendarBody.innerHTML = ''; 
+
             const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
             dayNames.forEach(name => {
                 const headerCell = document.createElement('div');
@@ -100,19 +121,24 @@
                 headerCell.innerText = name;
                 calendarBody.appendChild(headerCell);
             });
+
             const firstDayIndex = new Date(year, month, 1).getDay();
             const lastDate = new Date(year, month + 1, 0).getDate();
+
             for (let i = 0; i < firstDayIndex; i++) {
                 calendarBody.appendChild(document.createElement('div'));
             }
+
             for (let date = 1; date <= lastDate; date++) {
                 const cell = document.createElement('div');
                 cell.className = 'day-cell';
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                
                 const numDiv = document.createElement('div');
                 numDiv.className = 'day-number';
                 numDiv.innerText = date;
                 cell.appendChild(numDiv);
+
                 if (savedEvents[dateStr]) {
                     savedEvents[dateStr].forEach((eventTitle, index) => {
                         const eventDiv = document.createElement('div');
@@ -130,6 +156,7 @@
                         cell.appendChild(eventDiv);
                     });
                 }
+
                 cell.onclick = function() {
                     const title = prompt(`${month + 1}월 ${date}일 새로운 일정:`);
                     if (title && title.trim() !== '') {
@@ -141,6 +168,11 @@
                 };
                 calendarBody.appendChild(cell);
             }
+        }
+
+        window.changeMonth = function(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            renderCalendar();
         }
     </script>
 </body>
