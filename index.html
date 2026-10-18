@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>비밀 스케줄러</title>
     <script>
-        // 🚨 [핵심 치트키] 도메인 사이트의 강제 액자 틀(iframe)에 갇혀있다면, 진짜 내 주소창으로 강제 탈출시킵니다!
         if (window.self !== window.top) {
             window.top.location.href = window.location.href;
         }
@@ -31,6 +30,7 @@
 </head>
 <body>
 
+    <!-- 🔒 사이트를 켜면 무조건 이 인증 창이 먼저 활성화됩니다 -->
     <div id="auth-container">
         <h2>🔒 비밀 기기 인증</h2>
         <p>인증 코드를 입력하세요.</p>
@@ -65,7 +65,7 @@
             const inputCode = document.getElementById('device-code').value;
             const currentPassword = localStorage.getItem('my_saved_password');
             if (inputCode === currentPassword) {
-                localStorage.setItem('my_device_locked_auth', 'true');
+                // 기존의 자동 로그인 기억 장치(localStorage 저장)를 완전히 없앴습니다!
                 showCalendarPage();
             } else {
                 alert("올바른 기기 인증 코드가 아닙니다!");
@@ -88,17 +88,13 @@
 
         window.logoutDevice = function() {
             if (confirm("화면을 잠그시겠습니까?")) {
-                localStorage.removeItem('my_device_locked_auth');
                 location.reload(); 
             }
         }
 
-        if (localStorage.getItem('my_device_locked_auth') === 'true') {
-            showCalendarPage();
-        } else {
-            document.getElementById('auth-container').style.display = 'block';
-            document.getElementById('main-container').style.display = 'none';
-        }
+        // 페이지가 열릴 때 무조건 로그인 창 상태로 강제 초기화합니다
+        document.getElementById('auth-container').style.display = 'block';
+        document.getElementById('main-container').style.display = 'none';
 
         function showCalendarPage() {
             document.getElementById('auth-container').style.display = 'none';
