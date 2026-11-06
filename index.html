@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MBTI 방탈출 </title>
+    <title>MBTI 방 탈출 테스트</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -13,6 +13,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative; /* 워터마크 고정을 위한 설정 */
         }
         .container {
             background-color: white;
@@ -63,14 +64,50 @@
             background-color: #e74c3c;
             border: 4px solid #c0392b;
         }
+        
+        /* 결과 창 및 종이 가림막 스타일 */
+        .result-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         .result-box {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             color: #2c3e50;
-            line-height: 1.6;
         }
+        .paper-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: #7f8c8d;
+            cursor: pointer;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            user-select: none;
+        }
+        /* 종이가 걷혀질 때의 효과 */
+        .paper-cover.reveal {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none; /* 클릭 차단 */
+        }
+
         .restart-btn {
-            margin-top: 20px;
+            margin-top: 25px;
             padding: 10px 20px;
             background-color: #2ecc71;
             color: white;
@@ -78,6 +115,17 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+        }
+
+        /* 오른쪽 아래 제작자 표시 */
+        .watermark {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -137,10 +185,20 @@
     <!-- 마지막 결과 창 -->
     <div id="roomResult" class="room">
         <h2>🎉 테스트 결과</h2>
-        <div id="resultText" class="result-box"></div>
+        <div class="result-wrapper">
+            <!-- 결과 텍스트 (뒤에 숨겨짐) -->
+            <div id="resultText" class="result-box"></div>
+            <!-- 결과를 가리는 흰색 종이 -->
+            <div id="paperCover" class="paper-cover" onclick="revealResult()">
+                📄 흰색 종이를 클릭하여 결과를 확인하세요!
+            </div>
+        </div>
         <button class="restart-btn" onclick="restartTest()">다시 하기</button>
     </div>
 </div>
+
+<!-- 오른쪽 아래 고정 문구 -->
+<div class="watermark">made by SHMS_atomic</div>
 
 <script>
     // MBTI 변수 초기화
@@ -149,9 +207,7 @@
     let T = 0, F = 0;
     let J = 0, P = 0;
 
-    // 문 클릭 시 점수 계산 및 방 이동 함수
     function selectDoor(roomNum, doorColor) {
-        // 점수 계산 규칙 적용
         if (roomNum === 1) {
             if (doorColor === 'blue') E += 1;
             else I += 1;
@@ -163,8 +219,8 @@
             nextRoom('room3');
         } 
         else if (roomNum === 3) {
-            if (doorColor === 'blue') T += 2; // T 2점 증가
-            else F += 2; // F 2점 증가
+            if (doorColor === 'blue') T += 2;
+            else F += 2;
             nextRoom('room4');
         } 
         else if (roomNum === 4) {
@@ -173,44 +229,40 @@
             nextRoom('room5');
         } 
         else if (roomNum === 5) {
-            if (doorColor === 'blue') T += 1; // T 1점 증가
-            else F += 1; // F 1점 증가
+            if (doorColor === 'blue') T += 1;
+            else F += 1;
             showResult();
         }
     }
 
-    // 화면 전환 함수
     function nextRoom(nextRoomId) {
-        // 모든 방 숨기기
         document.querySelectorAll('.room').forEach(room => {
             room.classList.remove('active');
         });
-        // 다음 방 보여주기
         document.getElementById(nextRoomId).classList.add('active');
     }
 
-    // 결과 계산 및 출력 함수
     function showResult() {
         let result_mbti = "";
 
-        // 1. E vs I 비교
         result_mbti += (E >= I) ? "E" : "I";
-
-        // 2. N vs S 비교
         result_mbti += (N >= S) ? "N" : "S";
-
-        // 3. T vs F 비교
         result_mbti += (T >= F) ? "T" : "F";
-
-        // 4. J vs P 비교
         result_mbti += (J >= P) ? "J" : "P";
 
-        // 결과 텍스트 삽입 후 창 전환
         document.getElementById('resultText').innerText = "당신의 mbti는 " + result_mbti + "입니다!";
+        
+        // 다시 시작할 때를 대비해 종이 가림막 상태 원상복구
+        document.getElementById('paperCover').classList.remove('reveal');
+        
         nextRoom('roomResult');
     }
 
-    // 테스트 초기화 함수
+    // 흰색 종이를 클릭했을 때 호출되는 함수
+    function revealResult() {
+        document.getElementById('paperCover').classList.add('reveal');
+    }
+
     function restartTest() {
         E = 0; I = 0; N = 0; S = 0; T = 0; F = 0; J = 0; P = 0;
         nextRoom('room1');
