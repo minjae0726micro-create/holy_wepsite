@@ -1,103 +1,221 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>비밀 스케줄러</title>
-    <script>if(window.self!==window.top){window.top.location.href=window.location.href;}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 방탈출 </title>
     <style>
-        body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; padding-bottom: 60px; box-sizing: border-box; }
-        #auth-container { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; box-sizing: border-box; }
-        #auth-container input { padding: 12px 15px; font-size: 1rem; border-radius: 6px; border: 1px solid #cbd5e1; margin: 15px 0; width: 80%; text-align: center; }
-        #auth-container button { padding: 12px 25px; font-size: 1rem; background: #4A90E2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 80%; }
-        #main-container { display: none; width: 100%; max-width: 900px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-header button { padding: 8px 15px; background: #4A90E2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .setting-buttons { display: flex; gap: 5px; }
-        .setting-buttons button { background: #64748b; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .day-name { font-weight: bold; padding: 10px; background: #eef5fc; border-radius: 6px; color: #333; }
-        .day-cell { min-height: 95px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; text-align: left; cursor: pointer; display: flex; flex-direction: column; box-sizing: border-box; }
-        .day-cell:hover { background: #f7fafc; border-color: #4A90E2; }
-        .day-number { font-weight: bold; font-size: 0.9rem; color: #4a5568; margin-bottom: 5px; }
-        .event-item { background: #4A90E2; color: white; font-size: 0.75rem; padding: 3px 6px; border-radius: 4px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .event-item:hover { background: #e53e3e; }
-        footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 50px; background: #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; color: #94a3b8; font-size: 0.85rem; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        .footer-left { font-weight: bold; letter-spacing: 0.5px; color: #e2e8f0; }
-        .footer-right button { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 400px;
+        }
+        .room {
+            display: none;
+        }
+        .room.active {
+            display: block;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .door-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .door {
+            width: 120px;
+            height: 180px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .door:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        .blue-door {
+            background-color: #3498db;
+            border: 4px solid #2980b9;
+        }
+        .red-door {
+            background-color: #e74c3c;
+            border: 4px solid #c0392b;
+        }
+        .result-box {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        .restart-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <div id="auth-container">
-        <h2>🔒 비밀 기기 인증</h2><p>인증 코드를 입력하세요.</p>
-        <input type="password" id="device-code" placeholder="비밀번호 입력"><button id="btn-auth">인증하기</button>
-    </div>
-    <div id="main-container">
-        <div class="calendar-header">
-            <div><button id="btn-prev">◀ 이전 달</button><button id="btn-next">다음 달 ▶</button></div>
-            <h2 id="month-title">달력 화면</h2>
-            <div class="setting-buttons"><button id="btn-change-pw">⚙️ 암호 변경</button><button id="btn-logout">🔒 잠그기</button></div>
-        </div>
-        <div class="calendar-grid" id="calendar-body"></div>
-    </div>
-    <footer>
-        <div class="footer-left">made by minjae</div>
-        <div class="footer-right"><button id="btn-debug">🛠️ 디버그 모드</button></div>
-    </footer>
-    <script>
-        let currentDate = new Date();
-        // 🔒 외부 서버 연결을 끊고, 기기 고유 독립 보안 브라우저 보관함에 다이렉트로 일정을 입출력합니다.
-        let savedEvents = JSON.parse(localStorage.getItem('minjae_standalone_calendar_v1')) || {};
-        if (!localStorage.getItem('my_saved_password')) { localStorage.setItem('my_saved_password', '1234'); }
 
-        document.getElementById('btn-auth').onclick = function() { const inputCode = document.getElementById('device-code').value; const currentPassword = localStorage.getItem('my_saved_password'); if (inputCode === currentPassword) { document.getElementById('auth-container').style.display = 'none'; document.getElementById('main-container').style.display = 'block'; renderCalendar(); } else { alert("올바른 기기 인증 코드가 아닙니다!"); } };
-        document.getElementById('btn-change-pw').onclick = function() { const currentPassword = localStorage.getItem('my_saved_password'); const checkOld = prompt("현재 비밀번호를 입력하세요:"); if (checkOld === currentPassword) { const newPassword = prompt("새로운 비밀번호를 입력하세요:"); if (newPassword && newPassword.trim() !== "") { localStorage.setItem('my_saved_password', newPassword.trim()); alert("비밀번호가 변경되었습니다!"); } } else if (checkOld !== null) { alert("비밀번호가 일치하지 않습니다!"); } };
-        document.getElementById('btn-logout').onclick = function() { if (confirm("화면을 잠그시겠습니까?")) { location.reload(); } };
-        document.getElementById('btn-debug').onclick = function() { const devCode = prompt("개발자 인증 코드를 입력하세요:"); if (devCode === "minjae1707**") { alert("[💻 민재 개발자 기기 자체 저장 시스템 리포트]\n\n✅ 외부 네트워크 방화벽 간섭 0% 우회 통과\n✅ 화면 내 실시간 일정 추가 및 영구 보관 활성화\n\n🎯 결론: 사이트가 버그 없이 완벽하게 정상 가동 중입니다!"); } else if (devCode !== null) { alert("접근 권한이 거부되었습니다."); } };
-        document.getElementById('btn-prev').onclick = function() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); };
-        document.getElementById('btn-next').onclick = function() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); };
-        document.getElementById('auth-container').style.display = 'block'; document.getElementById('main-container').style.display = 'none';
-        
-        function renderCalendar() {
-            const year = currentDate.getFullYear(); const month = currentDate.getMonth(); document.getElementById('month-title').innerText = `📅 ${year}년 ${month + 1}월`;
-            const calendarBody = document.getElementById('calendar-body'); calendarBody.innerHTML = '';
-            const dayNames = ['일', '월', '화', '수', '목', '금', '토']; dayNames.forEach(name => { const headerCell = document.createElement('div'); headerCell.className = 'day-name'; headerCell.innerText = name; calendarBody.appendChild(headerCell); });
-            const firstDayIndex = new Date(year, month, 1).getDay(); const lastDate = new Date(year, month + 1, 0).getDate();
-            for (let i = 0; i < firstDayIndex; i++) { calendarBody.appendChild(document.createElement('div')); }
-            for (let date = 1; date <= lastDate; date++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell'; const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-                const numDiv = document.createElement('div'); numDiv.className = 'day-number'; numDiv.innerText = date; cell.appendChild(numDiv);
-                
-                // 화면에 내가 추가한 일정 불러오기
-                if (savedEvents[dateStr]) {
-                    savedEvents[dateStr].forEach((eventTitle, index) => {
-                        const eventDiv = document.createElement('div'); eventDiv.className = 'event-item'; eventDiv.innerText = eventTitle;
-                        // 일정을 마우스로 클릭하면 화면에서 즉시 삭제하는 안전 삭제 로직
-                        eventDiv.onclick = function(e) {
-                            e.stopPropagation(); // 날짜 칸 클릭과 겹치는 현상 방지
-                            if (confirm(`'${eventTitle}' 일정을 정말로 삭제하시겠습니까?`)) {
-                                savedEvents[dateStr].splice(index, 1);
-                                if (savedEvents[dateStr].length === 0) { delete savedEvents[dateStr]; }
-                                localStorage.setItem('minjae_standalone_calendar_v1', JSON.stringify(savedEvents));
-                                renderCalendar(); // 지운 뒤 즉시 새로고침
-                            }
-                        };
-                        cell.appendChild(eventDiv);
-                    });
-                }
-                
-                // 빈 날짜 칸을 누르면 사이트 화면에서 즉시 일정을 저장하는 기능
-                cell.onclick = function() {
-                    const title = prompt(`${month + 1}월 ${date}일 새로운 일정 등록:`);
-                    if (title && title.trim() !== '') {
-                        if (!savedEvents[dateStr]) { savedEvents[dateStr] = []; }
-                        savedEvents[dateStr].push(title);
-                        // 내 기기 브라우저 보관함에 영구 잠금 저장
-                        localStorage.setItem('minjae_standalone_calendar_v1', JSON.stringify(savedEvents));
-                        renderCalendar(); // 등록 뒤 즉시 새로고침
-                    }
-                };
-                calendarBody.appendChild(cell);
-            }
+<div class="container">
+    <!-- 1번방 -->
+    <div id="room1" class="room active">
+        <h2>🚪 1번방</h2>
+        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="door-container">
+            <div class="door blue-door" onclick="selectDoor(1, 'blue')">파란문</div>
+            <div class="door red-door" onclick="selectDoor(1, 'red')">빨간문</div>
+        </div>
+    </div>
+
+    <!-- 2번방 -->
+    <div id="room2" class="room">
+        <h2>🚪 2번방</h2>
+        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="door-container">
+            <div class="door blue-door" onclick="selectDoor(2, 'blue')">파란문</div>
+            <div class="door red-door" onclick="selectDoor(2, 'red')">빨간문</div>
+        </div>
+    </div>
+
+    <!-- 3번방 -->
+    <div id="room3" class="room">
+        <h2>🚪 3번방</h2>
+        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="door-container">
+            <div class="door blue-door" onclick="selectDoor(3, 'blue')">파란문</div>
+            <div class="door red-door" onclick="selectDoor(3, 'red')">빨간문</div>
+        </div>
+    </div>
+
+    <!-- 4번방 -->
+    <div id="room4" class="room">
+        <h2>🚪 4번방</h2>
+        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="door-container">
+            <div class="door blue-door" onclick="selectDoor(4, 'blue')">파란문</div>
+            <div class="door red-door" onclick="selectDoor(4, 'red')">빨간문</div>
+        </div>
+    </div>
+
+    <!-- 5번방 -->
+    <div id="room5" class="room">
+        <h2>🚪 5번방</h2>
+        <p>마지막 선택의 방입니다.</p>
+        <div class="door-container">
+            <div class="door blue-door" onclick="selectDoor(5, 'blue')">파란문</div>
+            <div class="door red-door" onclick="selectDoor(5, 'red')">빨간문</div>
+        </div>
+    </div>
+
+    <!-- 마지막 결과 창 -->
+    <div id="roomResult" class="room">
+        <h2>🎉 테스트 결과</h2>
+        <div id="resultText" class="result-box"></div>
+        <button class="restart-btn" onclick="restartTest()">다시 하기</button>
+    </div>
+</div>
+
+<script>
+    // MBTI 변수 초기화
+    let E = 0, I = 0;
+    let N = 0, S = 0;
+    let T = 0, F = 0;
+    let J = 0, P = 0;
+
+    // 문 클릭 시 점수 계산 및 방 이동 함수
+    function selectDoor(roomNum, doorColor) {
+        // 점수 계산 규칙 적용
+        if (roomNum === 1) {
+            if (doorColor === 'blue') E += 1;
+            else I += 1;
+            nextRoom('room2');
+        } 
+        else if (roomNum === 2) {
+            if (doorColor === 'blue') N += 1;
+            else S += 1;
+            nextRoom('room3');
+        } 
+        else if (roomNum === 3) {
+            if (doorColor === 'blue') T += 2; // T 2점 증가
+            else F += 2; // F 2점 증가
+            nextRoom('room4');
+        } 
+        else if (roomNum === 4) {
+            if (doorColor === 'blue') J += 1;
+            else P += 1;
+            nextRoom('room5');
+        } 
+        else if (roomNum === 5) {
+            if (doorColor === 'blue') T += 1; // T 1점 증가
+            else F += 1; // F 1점 증가
+            showResult();
         }
-    </script>
+    }
+
+    // 화면 전환 함수
+    function nextRoom(nextRoomId) {
+        // 모든 방 숨기기
+        document.querySelectorAll('.room').forEach(room => {
+            room.classList.remove('active');
+        });
+        // 다음 방 보여주기
+        document.getElementById(nextRoomId).classList.add('active');
+    }
+
+    // 결과 계산 및 출력 함수
+    function showResult() {
+        let result_mbti = "";
+
+        // 1. E vs I 비교
+        result_mbti += (E >= I) ? "E" : "I";
+
+        // 2. N vs S 비교
+        result_mbti += (N >= S) ? "N" : "S";
+
+        // 3. T vs F 비교
+        result_mbti += (T >= F) ? "T" : "F";
+
+        // 4. J vs P 비교
+        result_mbti += (J >= P) ? "J" : "P";
+
+        // 결과 텍스트 삽입 후 창 전환
+        document.getElementById('resultText').innerText = "당신의 mbti는 " + result_mbti + "입니다!";
+        nextRoom('roomResult');
+    }
+
+    // 테스트 초기화 함수
+    function restartTest() {
+        E = 0; I = 0; N = 0; S = 0; T = 0; F = 0; J = 0; P = 0;
+        nextRoom('room1');
+    }
+</script>
+
 </body>
 </html>
