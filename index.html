@@ -13,7 +13,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            position: relative; /* 워터마크 고정을 위한 설정 */
+            position: relative;
         }
         .container {
             background-color: white;
@@ -21,7 +21,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
-            width: 400px;
+            width: 440px; /* 대사 출력을 위해 너비를 소폭 넓혔습니다 */
         }
         .room {
             display: none;
@@ -31,12 +31,30 @@
         }
         h2 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+        }
+        .room-desc {
+            font-size: 14px;
+            color: #555;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: left;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .desc-blue {
+            color: #2980b9;
+            font-weight: bold;
+        }
+        .desc-red {
+            color: #c0392b;
+            font-weight: bold;
         }
         .door-container {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .door {
             width: 120px;
@@ -92,18 +110,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 16px;
+            font-size: 15px;
             color: #7f8c8d;
             cursor: pointer;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
             transition: opacity 0.5s ease, transform 0.5s ease;
             user-select: none;
         }
-        /* 종이가 걷혀질 때의 효과 */
         .paper-cover.reveal {
             opacity: 0;
             transform: scale(0.9);
-            pointer-events: none; /* 클릭 차단 */
+            pointer-events: none;
         }
 
         .restart-btn {
@@ -135,7 +152,10 @@
     <!-- 1번방 -->
     <div id="room1" class="room active">
         <h2>🚪 1번방</h2>
-        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="room-desc">
+            <span class="desc-blue">🔵 파란문:</span> 여학생이 쓰러져있어 도와줄까?<br>
+            <span class="desc-red">🔴 빨간문:</span> 지금 그게 중요한게 아니야! 빨리가자!
+        </div>
         <div class="door-container">
             <div class="door blue-door" onclick="selectDoor(1, 'blue')">파란문</div>
             <div class="door red-door" onclick="selectDoor(1, 'red')">빨간문</div>
@@ -145,7 +165,10 @@
     <!-- 2번방 -->
     <div id="room2" class="room">
         <h2>🚪 2번방</h2>
-        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="room-desc">
+            <span class="desc-blue">🔵 파란문:</span> 불이 어떻게 난걸까?<br>
+            <span class="desc-red">🔴 빨간문:</span> 지금가도 시간이 부족해 얼른가자!
+        </div>
         <div class="door-container">
             <div class="door blue-door" onclick="selectDoor(2, 'blue')">파란문</div>
             <div class="door red-door" onclick="selectDoor(2, 'red')">빨간문</div>
@@ -155,7 +178,10 @@
     <!-- 3번방 -->
     <div id="room3" class="room">
         <h2>🚪 3번방</h2>
-        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="room-desc">
+            <span class="desc-blue">🔵 파란문:</span> 선생님이 찾던 물건이 이건가보네.<br>
+            <span class="desc-red">🔴 빨간문:</span> 선생님께 돌려드리지 않으면 선생님이 슬퍼하겠지?
+        </div>
         <div class="door-container">
             <div class="door blue-door" onclick="selectDoor(3, 'blue')">파란문</div>
             <div class="door red-door" onclick="selectDoor(3, 'red')">빨간문</div>
@@ -165,7 +191,10 @@
     <!-- 4번방 -->
     <div id="room4" class="room">
         <h2>🚪 4번방</h2>
-        <p>어떤 문으로 나아가시겠습니까?</p>
+        <div class="room-desc">
+            <span class="desc-blue">🔵 파란문:</span> 빨리가야되!<br>
+            <span class="desc-red">🔴 빨간문:</span> 학교 어짜피 지각인데 가볼까?
+        </div>
         <div class="door-container">
             <div class="door blue-door" onclick="selectDoor(4, 'blue')">파란문</div>
             <div class="door red-door" onclick="selectDoor(4, 'red')">빨간문</div>
@@ -175,7 +204,10 @@
     <!-- 5번방 -->
     <div id="room5" class="room">
         <h2>🚪 5번방</h2>
-        <p>마지막 선택의 방입니다.</p>
+        <div class="room-desc">
+            <span class="desc-blue">🔵 파란문:</span> 코인을 주고 빨리가자 눈앞이 학교야!<br>
+            <span class="desc-red">🔴 빨간문:</span> 무서운데... 그냥가자!
+        </div>
         <div class="door-container">
             <div class="door blue-door" onclick="selectDoor(5, 'blue')">파란문</div>
             <div class="door red-door" onclick="selectDoor(5, 'red')">빨간문</div>
@@ -186,9 +218,7 @@
     <div id="roomResult" class="room">
         <h2>🎉 테스트 결과</h2>
         <div class="result-wrapper">
-            <!-- 결과 텍스트 (뒤에 숨겨짐) -->
             <div id="resultText" class="result-box"></div>
-            <!-- 결과를 가리는 흰색 종이 -->
             <div id="paperCover" class="paper-cover" onclick="revealResult()">
                 📄 흰색 종이를 클릭하여 결과를 확인하세요!
             </div>
@@ -197,11 +227,9 @@
     </div>
 </div>
 
-<!-- 오른쪽 아래 고정 문구 -->
 <div class="watermark">made by SHMS_atomic</div>
 
 <script>
-    // MBTI 변수 초기화
     let E = 0, I = 0;
     let N = 0, S = 0;
     let T = 0, F = 0;
@@ -251,14 +279,11 @@
         result_mbti += (J >= P) ? "J" : "P";
 
         document.getElementById('resultText').innerText = "당신의 mbti는 " + result_mbti + "입니다!";
-        
-        // 다시 시작할 때를 대비해 종이 가림막 상태 원상복구
         document.getElementById('paperCover').classList.remove('reveal');
         
         nextRoom('roomResult');
     }
 
-    // 흰색 종이를 클릭했을 때 호출되는 함수
     function revealResult() {
         document.getElementById('paperCover').classList.add('reveal');
     }
